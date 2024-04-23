@@ -1,0 +1,78 @@
+.navbar {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff; /* Match to the color in your image */
+  padding: 0.5rem 0rem; /* Adjust padding as needed */
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.03);
+  z-index: 1000; /* Ensures the navbar is on top of other elements */
+}
+
+.logo {
+  font-size: 1.5rem; /* If the logo is text */
+  color: #333; /* Logo text color */
+  flex: 0.7 1 0;
+  padding: 10px 20px;
+  margin: auto;
+}
+
+.logo-text {
+  margin: auto;
+  text-align: center;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.interaction-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 3 1 0;
+  padding: 0px 20px 0px 10px;
+}
+
+.search-bar {
+  background-color: #f4f4f4; /* Light gray background */
+  border-radius: 20px; /* Rounded corners for the search bar */
+  padding: 0.7rem 1rem;
+  flex-grow: 1; /* If you want the search bar to grow with the container */
+}
+
+.search-bar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%; /* Ensure the input uses all the available space */
+}
+
+.nav-icons {
+  margin-left: 1rem; 
+  display: flex;
+  align-items: center;
+}
+
+.nav-icons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.nav-icons button img {
+  width: auto; /* Adjust width as needed */
+  height: 20px; /* Adjust height as needed */
+  margin: 0 10px; /* Adjust spacing around icons */
+}
+
+/* Styles for the profile picture specifically */
+.profile-pic img {
+  width: 45px !important; 
+  height: auto !important; 
+  border-radius: 50%; /* Makes the image round */
+  border: 2.5px solid #FFF; /* Border color */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Adds a subtle shadow */
+}

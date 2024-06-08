@@ -8,6 +8,10 @@
     width: 100%
 }
 
+.mapboxgl-canvas {
+    transition: width 0.1s ease;
+}
+
 /* Loading Spinner CSS */
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
@@ -59,23 +63,37 @@
 }
 
 .suggested-panel {
-    flex: 1;
-    padding: 20px;
+    flex: 1.2;
     border-radius: 15px;
-    margin: 20px;
-    overflow: scroll;
+    overflow: auto;
     height: max-content;
 }
 
-.connections-panel {
-    flex: 1;
+.right {
+    display: flex;
+    flex-direction: column;
+    flex: 1.2;
+}
+
+.card {
     padding: 20px;
     background: #ffffff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     margin: 20px;
-    overflow: scroll;
-    height: 50vh;
+    margin-bottom: 0px;
+    overflow: auto;
+    height: max-content;
+}
+
+.friend-requests h4{
+    margin: 0px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #EEE;
+}
+
+.connections h4 {
+    margin-top: 0px;
 }
 
 .row-flex {
@@ -107,12 +125,7 @@
 }
 
 .profile-card {
-    transition: all 0.3s ease-in-out;
-}
-  
-.profile-card.shrink {
-    height: 110px; /* Adjust height as needed */
-    transition: all 0.3s ease-in-out;
+    transition: all 1s ease-in-out;
 }
 
 .top {
@@ -142,16 +155,63 @@
 
 .profile-image-section {
     position: absolute;
+    width: 138px; /* Increased to account for the border */
+    height: 138px; /* Increased to account for the border */
     top: -60px;
     left: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-container {
+    position: relative;
+    width: 130px; /* Width of the image + border */
+    height: 130px; /* Height of the image + border */
+    border-radius: 50%;
+    border: 4px solid #FFF; /* 4px border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 .profile-picture {
+    width: 122px; /* Image width - 4px border on each side */
+    height: 122px; /* Image height - 4px border on each side */
+    border-radius: 50%;
+    background: #FFF;
+    cursor: pointer;
+    transition: all 0.12s ease-in-out;
+}
+
+.avatar-picture {
     width: 130px;
     height: 130px;
     border-radius: 50%;
     border: 4px solid #FFF; /* Match background color to create overlap effect */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #FFF;
+}
+
+.upload-container:hover .profile-picture {
+    filter: brightness(50%);
+}
+
+.change-picture-text {
+    position: absolute;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.12s ease-in-out;
+    pointer-events: none; /* Ensure the text does not interfere with hovering */
+}
+
+.upload-container:hover .change-picture-text {
+    opacity: 1;
 }
 
 .profile-text {
@@ -175,32 +235,6 @@
     display: block;
     text-align: left;
     margin-top: 4px;
-}
-
-.button {
-    color: #FFF;
-    border: none;
-    border-radius: .3rem;
-    padding: 10px 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-weight: 700;
-    font-size: 10px;
-    margin-left: 10px;
-}
-
-.add-friend {
-    background-color: #10d876;
-}
-
-.message {
-    background-color: #f5f5f5;
-    color: rgb(41, 41, 41); 
-}
-
-.more {
-    background-color: #f5f5f5;
-    color: rgb(41, 41, 41);
 }
 
 .profile-tabs {
@@ -229,6 +263,7 @@
 
 .profile-details {
     padding: 1.5rem;
+    transition: all 1s ease-in-out;
 }
 
 .profile-details h4 {
@@ -254,6 +289,12 @@
     line-height: 20px;
     font-size: 13px;
     text-align: left;
+    max-height: 240px;
+    overflow: auto;
+}
+
+.profile-location {
+    margin-top: 0;
 }
 
 .profile-settings p {
@@ -262,19 +303,6 @@
     line-height: 20px;
     font-size: 12px;
     text-align: left;
-}
-
-.bottom-border {
-    border-bottom: 1px solid #EEE;
-}
-
-.bot-margin {
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-.no-margin {
-    margin: 0;
 }
 
 .connections-panel h4 {
@@ -289,6 +317,125 @@
     text-align: left;
 }
 
+/* Friend Request Buttons */
+.add-friend {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    background-color: #f5f5f5 !important;
+    color: #adb5bd !important;
+    font-size: 11px !important;
+}
+
+.add-friend:hover {
+    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.sent-request {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    background-color: #10d876 !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    cursor: default !important;
+}
+
+/* remove hover on .sent-request */
+.sent-request:hover {
+    background-color: inherit !important;
+    box-shadow: 0 0.2rem 0.2rem rgba(0, 0, 0, 0.15) !important;
+    translate: none !important;    
+}
+
+.sent-request:active {
+    transform: none !important;
+}
+
+/* Shrinking About */
+.left-col {
+    transition: all 0.2s ease-in-out;
+}
+
+.left-col.shrink {
+    padding: 0;
+    flex: 0;
+    margin: 0;
+    max-height: 600px;
+    overflow: hidden;
+}
+
+.profile-details, .profile-settings {
+    transition: all 0.2s ease-in-out;
+}
+
+.left-col.shrink .profile-details,
+.left-col.shrink .profile-settings {
+    opacity: 0;
+}
+
+
+/* EDIT MODE ---- */
+.edit {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.about-edit {
+    width: 100%;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9da2a8;
+    height: 200px;
+    line-height: 20px;
+    padding: 10px;
+    border: 2px solid #EEE;
+    border-radius: 5px;
+    resize: none;
+}
+
+.location-edit {
+    width: 100%;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9da2a8;
+    line-height: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.location-edit input {
+    width: 100%;
+    border: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9da2a8;
+    height: 30px;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+
+    border: 2px solid #EEE;
+}
+
+#state-input {
+    margin-right: 0px;
+}
+
+.about-button {
+    width: 90%;
+    margin-top: 20px;
+    color: black;
+    justify-content: center;
+}
+
+.about-button:hover {
+    color: white;
+}
 
 /* TAGS --------- */
 
@@ -298,13 +445,13 @@
     overflow: hidden; 
     padding: 0;
     margin-top: 13px;
-  }
+}
   
-  .tags li {
+.tags li {
     float: left; 
-  }
+}
   
-  .tag {
+.tag {
     background: #eee;
     border-radius: 3px 0 0 3px;
     color: #999;
@@ -319,9 +466,9 @@
     font-size: 12px;
     border: 0px;
     cursor: pointer;
-  }
+}
   
-  .tag::before {
+.tag::before {
     background: #fff;
     border-radius: 10px;
     box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
@@ -331,9 +478,9 @@
     position: absolute;
     width: 6px;
     top: 10px;
-  }
+}
   
-  .tag::after {
+.tag::after {
     background: #fff;
     border-bottom: 13px solid transparent;
     border-left: 10px solid #eee;
@@ -342,26 +489,57 @@
     position: absolute;
     right: 0;
     top: 0;
-  }
+}
   
-  .tag:hover {
+.tag:hover {
     background-color: crimson;
     color: white;
-  }
+}
   
-  .tag:hover::after {
-     border-left-color: crimson; 
-  }
+.tag:hover::after {
+    border-left-color: crimson; 
+}
 
-  .tag-active {
+.tag-active {
     background-color: #10d876 !important;
     color: white;
-  }
+}
   
-  .tag-active::after {
-     border-left-color: #10d876; 
-  }
-
-  .tag-active:hover::after {
+.tag-active::after {
     border-left-color: #10d876; 
- }
+}
+
+.tag-active:hover::after {
+    border-left-color: #10d876; 
+}
+
+/* Delete Button */
+.trash-button {
+    height: 28px;
+    width: 28px;
+    padding: 0;
+    justify-content: center;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+.trash-button:hover {
+    background-color: #ff0000 !important;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-direction: row;
+}
+
+.post-header h4 {
+    margin: 0 !important;
+}
+
+#icon-trash {
+    height: 18px;
+    width: 18px;
+} 

@@ -13,31 +13,45 @@
 .logo {
   font-size: 1.5rem; /* If the logo is text */
   color: #333; /* Logo text color */
-  flex: 0.7 1 0;
+  flex: 1 1 0;
   padding: 10px 20px;
   margin: auto;
+  justify-content: start;
 }
 
 .logo-text {
   margin: auto;
-  text-align: center;
+  text-align: left;
   margin-left: 20px;
   font-weight: bold;
 }
 
 .interaction-field {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex: 3 1 0;
+  justify-content: end;
+  flex: 1 1 0;
   padding: 0px 20px 0px 10px;
+}
+
+.search-bar-container {
+  flex-grow: 1; /* If you want the search bar to grow with the container */
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
 .search-bar {
   background-color: #f4f4f4; /* Light gray background */
   border-radius: 20px; /* Rounded corners for the search bar */
   padding: 0.7rem 1rem;
-  flex-grow: 1; /* If you want the search bar to grow with the container */
+  width: 500px; 
+  z-index: 1000; /* Ensures the search bar is on top of other elements */
+}
+
+.search-bar:focus-within {
+  border-radius: 20px 20px 0 0;
+  background-color: #FFF; /* Change background color when focused */
+  box-shadow: 0 0px 6px rgba(32, 33, 36, 0.28);
 }
 
 .search-bar input {
@@ -53,19 +67,15 @@
   align-items: center;
 }
 
-.nav-icons button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-}
-
 .nav-icons button img {
   width: auto; /* Adjust width as needed */
   height: 20px; /* Adjust height as needed */
   margin: 0 10px; /* Adjust spacing around icons */
+}
+
+.profile-pic {
+  background: none;
+  border: none;
 }
 
 /* Styles for the profile picture specifically */
@@ -75,4 +85,101 @@
   border-radius: 50%; /* Makes the image round */
   border: 2.5px solid #FFF; /* Border color */
   box-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Adds a subtle shadow */
+  background: none;
+  cursor: pointer;
+}
+
+/* Styles for the buttons */
+.button-text {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  transition: width 0.2s ease-in-out;
+  font-size: 12px;
+}
+
+#logout {
+  margin-left: 15px;
+}
+
+#logout:hover {
+  background-color: #ff0000;
+  cursor: pointer;
+}
+
+
+/* Notification Button */
+#notifications {
+  margin-left: 10px;
+}
+
+#notifications:hover .button-text {
+  width: 110px !important;
+}
+
+/* Search Bar */
+.search-results {
+  position: absolute;
+  top: 80%;
+  transform: translateX(-16px);
+  background-color: white;
+  border-top: none;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 6px rgba(32, 33, 36, 0.28);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  z-index: 1000;
+  text-align: left;
+  width: 500px;
+}
+
+.search-results li {
+  padding: 12px;
+  padding-left: 30px;
+  cursor: pointer;
+}
+
+.search-results li:hover {
+  background-color: #f0f0f0;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.search-results img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 30px;
+}
+
+.no-result {
+  text-align: center;
+}
+
+.overlay {
+  position: fixed;
+  top: 65.2px;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.5s ease;
+  z-index: 0;
+  overflow: auto;
+}
+
+.overlay-active .overlay {
+  background: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  z-index: 1000;
 }

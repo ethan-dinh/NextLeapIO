@@ -6,14 +6,17 @@ html, body, #root {
   height: 100vh;
   margin: 0;
   overflow: hidden;
-  font: 'PT Sans', serif;
 }
 
 .App {
   display: flex;
   flex-direction: column;
-  background-color: #fbfcfe;
   height: 100%;
+}
+
+.page {
+  overflow: auto;
+  height: 100vh;
 }
 
 .interaction-container {

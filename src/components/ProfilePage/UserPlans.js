@@ -1,44 +1,81 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './ProfilePage.css';
-import './CreatePost.css';
+import './CSS/ProfilePage.css';
+import './CSS/CreatePost.css';
+import './CSS/Attributes.css';
+import { createPost, deletePlan } from './api';
+
+import trashIcon from './icons/trash.png';
 
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { CSSTransition } from 'react-transition-group';
 
 const tagsList = ['Long-term', 'Post-Grad', 'Maybe', 'Dream'];
 
-const PlanWithMap = ({ plan }) => {
+const PlanWithMap = ({ plan, activeTab, onDelete, userProfile, loggedInUid }) => {
     const mapContainerRef = useRef(null); // Creates a ref for the map container
+    const mapRef = useRef(null); // Reference to the map instance
 
     useEffect(() => {
-        const map = new mapboxgl.Map({
-        container: mapContainerRef.current, // Reference to the div element
-        style: 'mapbox://styles/mapbox/streets-v12', // Style URL from Mapbox
-        center: [parseFloat(plan.long), parseFloat(plan.lat)], // Center the map on the plan coordinates
-        zoom: 12 // Starting zoom level
-        });
+        if (mapContainerRef.current) {
+            mapRef.current = new mapboxgl.Map({
+                container: mapContainerRef.current, // Reference to the div element
+                style: 'mapbox://styles/mapbox/streets-v12', // Style URL from Mapbox
+                center: [parseFloat(plan.long), parseFloat(plan.lat)], // Center the map on the plan coordinates
+                zoom: 12 // Starting zoom level
+            });
 
-        // Add a pin to the plan location
-        new mapboxgl.Marker()
-        .setLngLat([parseFloat(plan.long), parseFloat(plan.lat)])
-        .addTo(map);
+            // Add a pin to the plan location
+            new mapboxgl.Marker()
+                .setLngLat([parseFloat(plan.long), parseFloat(plan.lat)])
+                .addTo(mapRef.current);
 
-        //remove the ability to zoom in and out
-        map.scrollZoom.disable();
+            // Remove the ability to zoom in and out
+            mapRef.current.scrollZoom.disable();
+
+            // Ensure the map is fully loaded before calling resize
+            mapRef.current.on('load', () => {
+                if (mapRef.current) {
+                    mapRef.current.resize();
+                }
+            });
+        }
 
         // Cleanup function to remove the map
-        return () => map && map.remove();
+        return () => mapRef.current && mapRef.current.remove();
     }, [plan.lat, plan.long]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            mapRef.current.resize();
+        }, 210);
+    }, [activeTab]);
 
     const tags = plan.tags.split(',').map(tag => tag.trim());
 
+    const handleDelete = async () => {
+        const result = await deletePlan(plan.planID);
+        if (result.success) {
+            onDelete(plan.planID);
+        } else {
+            console.error('Failed to delete plan:', result.message);
+        }
+    };
+
     return (
         <div className="profile-card">
-        <div className="profile-details">
-            <h4>{plan.neighborhood} - {plan.city}, {plan.state}</h4>
-            <div ref={mapContainerRef} className="map-container" style={{ height: '300px' }} />
-            <p className="profile-about">{plan.desc}</p>
+            <div className="post-details">
+                <div className="post-header">
+                    <h4>{plan.title} - {plan.city}, {plan.state}</h4>
+                    {loggedInUid === userProfile.uid && (
+                        <button onClick={handleDelete} className="modern-button trash-button">
+                            <img src={trashIcon} alt="Trash" id="icon-trash"/>
+                        </button>
+                    )}
+                </div>
+                <div ref={mapContainerRef} className="map-container" style={{ height: '300px' }} />
+                <p className="post-about grey font-size-xs font-weight-600">
+                    {plan.desc}
+                </p>
                 <div className="tags-selection">
                     {tags.map((tag, index) => (
                         <button key={tag} className={"tag"}>
@@ -51,7 +88,7 @@ const PlanWithMap = ({ plan }) => {
     );
 };
 
-function CreatePost({ addNewPlan }) {
+function CreatePost({ addNewPlan, loggedInUid, userProfile }) {
     const [selectedTags, setSelectedTags] = useState([]);
     const [coordinates, setCoordinates] = useState({ lat: null, long: null });
     const searchInputRef = useRef(null);
@@ -70,32 +107,35 @@ function CreatePost({ addNewPlan }) {
         }
     };
 
-    // Add and remove the 'shrink' class based on 'isPosted'
-    const profileCardClass = `profile-card ${isPosted ? 'shrink' : ''}`;
-
-    const handleFinalPost = () => {
+    const handleFinalPost = async () => {
         const newPlan = {
-            planID: Date.now(),
-            neighborhood: postTitle,
-            city: city.trim(), 
-            state: state.trim(), 
+            uid: loggedInUid,
+            title: postTitle,
+            city: city.trim(),
+            state: state.trim(),
             lat: coordinates.lat.toString(),
             long: coordinates.long.toString(),
-            tags: selectedTags.join(', '), 
-            desc: planDescription, 
+            tags: selectedTags.join(', '),
+            desc: planDescription,
         };
 
-        addNewPlan(newPlan);
+        const result = await createPost(newPlan);
 
-        // Reset all states
-        setPlanDescription('');
-        setPostTitle('');
-        setSelectedTags([]);
-        setCoordinates({ lat: null, long: null });
-        setIsPosted(false); // Reset isPosted to allow for new posts
+        if (result.success) {
+            addNewPlan(newPlan);
 
-        if (searchInputRef.current) {
-            searchInputRef.current.value = '';
+            // Reset all states
+            setPlanDescription('');
+            setPostTitle('');
+            setSelectedTags([]);
+            setCoordinates({ lat: null, long: null });
+            setIsPosted(false);
+
+            if (searchInputRef.current) {
+                searchInputRef.current.value = '';
+            }
+        } else {
+            console.error('Failed to create post:', result.message);
         }
     };
 
@@ -111,29 +151,34 @@ function CreatePost({ addNewPlan }) {
         const data = await response.json();
         const place = data.features[0];
 
-        console.log(place);
-
         if (place) {
             setCoordinates({ lat: place.center[1], long: place.center[0] });
 
-            // Loop through the context to find city and state
-            place.context.forEach((item) => {
-                if (item.id.startsWith('place.')) {
-                    setCity(item.text);
-                }
-                if (item.id.startsWith('region.')) { 
-                    setState(item.text);
-                }
-            });
+            console.log(place);
+            
+            if (place.place_type.includes('neighborhood') || place.place_type.includes('address') || place.place_type.includes('poi')) {
+                // Loop through the context to find city and state
+                place.context.forEach((item) => {
+                    if (item.id.startsWith('place.')) {
+                        setCity(item.text);
+                    }
+                    if (item.id.startsWith('region.')) { 
+                        setState(item.text);
+                    }
+                });
+            } else { 
+                setCity(place.place_name.split(',')[0]);
+                setState(place.place_name.split(',')[1].trim());
+            }
         }
     };
 
     useEffect(() => {
-        if (coordinates.lat && coordinates.long) { // Only proceed if coordinates are valid
+        if (coordinates.lat && coordinates.long) {
             const map = new mapboxgl.Map({
                 container: mapContainerRef.current,
                 style: 'mapbox://styles/mapbox/streets-v12',
-                center: [coordinates.long, coordinates.lat], // Center the map on the coordinates
+                center: [coordinates.long, coordinates.lat], 
                 zoom: 12
             });
 
@@ -160,82 +205,64 @@ function CreatePost({ addNewPlan }) {
         );
     };
 
-    return (
-        <div>
-            <CSSTransition
-                in={!isPosted}
-                timeout={500}
-                classNames="details-transition"
-                unmountOnExit
-                onEnter={() => console.log("Entering")}
-                onExited={() => console.log("Exited - Not Posted")}
-            > 
-                <div className={profileCardClass}>
-                    <div className="profile-details">
-                        <div className="create-post-header">Where's your next leap?</div>
-                        <div className="location-search">
-                            <form onSubmit={handleFormSubmit}>
-                                <input ref={searchInputRef} type="text" placeholder="Search for a location" />
-                                <button type="submit" className="search button">Search</button>
-                            </form>
-                        </div>
-                        {coordinates.lat && coordinates.long && (
-                            <div style={{marginTop: '10px'}}>
-                                <div className="map-desc">
-                                    <div className="location-result">
-                                        <div ref={mapContainerRef} className="map-container in-post" style={{ height: '200px' }} />
-                                    </div>
-                                    <div className="user-input-area">
-                                        <textarea
-                                            value={planDescription}
-                                            onChange={(e) => setPlanDescription(e.target.value)}
-                                            placeholder="Why are you going?"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="bottom-row">
-                                    <div className="tags-selection">
-                                        {tagsList.map((tag) => (
-                                            <button key={tag} className={selectedTags.includes(tag) ? 'tag tag-active' : 'tag'} onClick={() => toggleTagSelection(tag)}>
-                                                {tag}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <button className="post button" onClick={handlePostClick}>Next</button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </CSSTransition>
+    if (loggedInUid !== userProfile.uid) {
+        return null;
+    }
 
-            <CSSTransition
-                in={isPosted}
-                timeout={500}
-                classNames="post-transition"
-                unmountOnExit
-                onEnter={() => console.log("Entering Post")}
-                onExited={() => {
-                    console.log("Exited - Posted");
-                    setIsPosted(false); // This is crucial to trigger the switch back
-                }}
-            >
-                
-                <div className={profileCardClass}>
-                    <div className="profile-details">
-                        <div className="create-post-header">Your next leap to {city}, {state}!</div>
-                        <div className="location-search">
-                            <input 
-                                type="text" 
-                                value={postTitle} 
-                                onChange={(e) => setPostTitle(e.target.value)} 
-                                placeholder="Enter a title for your post" 
-                            />
-                            <button onClick={handleFinalPost} className="search button">POST</button>
+    return (
+        <div className={`profile-card`}>
+            <div className={`post-details ${isPosted ? 'reveal' : 'hidden'}`}>
+                <div className="create-post-header font-weight-800 font-size-sm">
+                    Your next leap to {city}, {state}!
+                </div>
+                <div className="location-search">
+                    <input 
+                        type="text" 
+                        value={postTitle} 
+                        onChange={(e) => setPostTitle(e.target.value)} 
+                        placeholder="Enter a title for your post" 
+                    />
+                    <button onClick={handleFinalPost} className="search button">POST</button>
+                </div>
+            </div>
+
+            <div className={`post-details ${isPosted ? 'shrink' : ''}`}>
+                <div className="create-post-header font-weight-800 font-size-sm">
+                    Where's your next leap?
+                </div>
+                <div className="location-search">
+                    <form onSubmit={handleFormSubmit}>
+                        <input ref={searchInputRef} type="text" placeholder="Search for a location" />
+                        <button type="submit" className="search button">Search</button>
+                    </form>
+                </div>
+                {coordinates.lat && coordinates.long && (
+                    <div style={{marginTop: '10px'}}>
+                        <div className="map-desc">
+                            <div className="location-result">
+                                <div ref={mapContainerRef} className="map-container in-post" style={{ height: '200px' }} />
+                            </div>
+                            <div className="user-input-area">
+                                <textarea
+                                    value={planDescription}
+                                    onChange={(e) => setPlanDescription(e.target.value)}
+                                    placeholder="Why are you going?"
+                                />
+                            </div>
+                        </div>
+                        <div className="bottom-row">
+                            <div className="tags-selection">
+                                {tagsList.map((tag) => (
+                                    <button key={tag} className={selectedTags.includes(tag) ? 'tag tag-active' : 'tag'} onClick={() => toggleTagSelection(tag)}>
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
+                            <button className="post button" onClick={handlePostClick}>Next</button>
                         </div>
                     </div>
-                </div>
-            </CSSTransition>
+                )}
+            </div>
         </div>
     );
 }

@@ -1,0 +1,7 @@
+<?php
+    $server = "ix.cs.uoregon.edu";
+    $dbname ="NextLeapDB";
+    $user = "edinh";
+    $pass = "Edinh0406";
+    $port="3083";
+?>

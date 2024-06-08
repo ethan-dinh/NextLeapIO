@@ -1,14 +1,6 @@
 .create-post-header{
     text-align: left;
     color: #000000;
-    font-weight: 800;
-    font-size: 15px;
-}
-
-.small {
-    width: 40px !important;
-    height: 40px !important;
-    border: 1px solid #adb5bd;
 }
 
 .input-pic {
@@ -23,13 +15,13 @@
 
 .search {
     background-color: #f5f5f5;
-    color: rgb(41, 41, 41); 
+    color: rgb(41, 41, 41) !important; 
     transition: 0.2s;
 }
 
 .search:hover {
     background-color: #10d876;
-    color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255) !important;
 }
 
 .map-desc {
@@ -74,7 +66,7 @@
     align-items: left;
 }
 
-.user-input-area textarea{
+.user-input-area textarea {
     width: 100%;
     height: 100px;
     color: #adb5bd;
@@ -110,36 +102,21 @@
 
 .in-post {
     border-radius: 15px 15px 0px 0px !important;
+} 
+
+.post-details {
+    padding: 1.5rem;
+    transition: all 1s ease-in-out;
+    padding-top: 15px;
 }
 
-/* Initial and Enter Transition Styles */
-/* Enter Transition */
-.details-transition-enter,
-.post-transition-enter {
-  opacity: 0;
-  transform: translateY(-20px) scale(0.98); /* Subtle scale down and move up */
+.post-details h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: left;
 }
 
-.details-transition-enter-active,
-.post-transition-enter-active {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: opacity 500ms ease-out, transform 500ms ease-out; /* Smoother, longer transition */
+.post-about {
+    line-height: 20px;
+    text-align: left;
 }
-
-/* Exit Transition */
-.details-transition-exit,
-.post-transition-exit {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.details-transition-exit-active,
-.post-transition-exit-active {
-  opacity: 0;
-  transform: translateY(20px) scale(0.98); /* Subtle scale down and move down */
-  transition: opacity 500ms ease-in, transform 500ms ease-in;
-}
-
-  
-

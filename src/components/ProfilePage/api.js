@@ -1,5 +1,8 @@
 import AWS from "aws-sdk";
 
+// Load environment variables
+const { REACT_APP_AWS_ACCESS_KEY_ID, REACT_APP_AWS_SECRET_ACCESS_KEY, REACT_APP_AWS_REGION, REACT_APP_BUCKET_NAME, REACT_APP_API_BASE_URL } = process.env;
+
 const testProfile = {
   name: "TEST",
   email: "TEST@gmail.com",
@@ -8,9 +11,9 @@ const testProfile = {
 };
 
 const s3 = new AWS.S3({
-  accessKeyId: "AKIAQXBYNAKY5KTU5DQJ",
-  secretAccessKey: "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",
-  region: "us-west-2"
+  accessKeyId: REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: REACT_APP_AWS_SECRET_ACCESS_KEY,
+  region: REACT_APP_AWS_REGION
 });
 
 export const uploadImage = async (userId, editor) => {
@@ -23,7 +26,7 @@ export const uploadImage = async (userId, editor) => {
   // Define the S3 parameters for the new image
   const key = `${userId}_${Date.now()}.png`;
   const params = {
-    Bucket: 'nextleapimageupload',
+    Bucket: REACT_APP_BUCKET_NAME,
     Key: key,
     Body: blob,
     ContentType: 'image/png',
@@ -50,7 +53,7 @@ export const uploadImage = async (userId, editor) => {
 const deleteOldImages = async (userId) => {
   try {
     const listParams = {
-      Bucket: 'nextleapimageupload',
+      Bucket: REACT_APP_BUCKET_NAME,
       Prefix: `${userId}_`,
     };
 
@@ -60,7 +63,7 @@ const deleteOldImages = async (userId) => {
     if (listedObjects.Contents.length === 0) return;
 
     const deleteParams = {
-      Bucket: 'nextleapimageupload',
+      Bucket: REACT_APP_BUCKET_NAME,
       Delete: { Objects: [] },
     };
 
@@ -77,7 +80,7 @@ const deleteOldImages = async (userId) => {
 };
 
 async function saveImagePath(uid, imagePath) {
-  const url = `https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/saveImagePath.php`;
+  const url = `${REACT_APP_API_BASE_URL}saveImagePath.php`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -95,8 +98,8 @@ async function saveImagePath(uid, imagePath) {
 }
 
 export async function fetchUserProfile(uid) {
-  const userInfoUrl = `https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/fetchUserProfile.php?uid=${uid}`;
-  const userPlansUrl = `https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/fetchPlans.php?uid=${uid}`;
+  const userInfoUrl = `${REACT_APP_API_BASE_URL}fetchUserProfile.php?uid=${uid}`;
+  const userPlansUrl = `${REACT_APP_API_BASE_URL}fetchPlans.php?uid=${uid}`;
 
   try {
     // Fetch user info
@@ -130,7 +133,7 @@ export async function fetchUserProfile(uid) {
 }
 
 export async function updateUserProfile(uid, bio, city, state) {
-  const url = `https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/updateUserProfile.php`;
+  const url = `${REACT_APP_API_BASE_URL}updateUserProfile.php`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -145,7 +148,7 @@ export async function updateUserProfile(uid, bio, city, state) {
 
 export async function createPost(newPlan) {
   try {
-    const response = await fetch('https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/createPost.php', {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}createPost.php`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -164,7 +167,7 @@ export async function createPost(newPlan) {
 export async function deletePlan(planID) {
   console.log('Deleting plan:', planID);
   try {
-    const response = await fetch(`https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/deletePlan.php?planID=${planID}`, {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}deletePlan.php?planID=${planID}`, {
       method: 'DELETE',
     });
 
@@ -179,7 +182,7 @@ export async function deletePlan(planID) {
 
 export async function sendFriendRequest(loggedInUid, userProfileUid) {
   try {
-    const response = await fetch('https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/friendRequestHandler.php', {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}friendRequestHandler.php`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -199,7 +202,6 @@ export async function sendFriendRequest(loggedInUid, userProfileUid) {
       return data;
     } else {
       throw new Error('Failed to send friend request: ' + data.message);
-      return data;
     }
   } catch (error) {
     console.error('Error:', error);
@@ -209,7 +211,7 @@ export async function sendFriendRequest(loggedInUid, userProfileUid) {
 
 export async function fetchFriendRequests(uid) {
   try {
-    const response = await fetch("https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/friendRequestHandler.php", {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}friendRequestHandler.php`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -234,7 +236,7 @@ export async function fetchFriendRequests(uid) {
 
 export async function acceptFriendRequest(uid, requestID) {
   try {
-    const response = await fetch("https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/friendRequestHandler.php", {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}friendRequestHandler.php`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -260,7 +262,7 @@ export async function acceptFriendRequest(uid, requestID) {
 
 export async function declineFriendRequest(uid, requestID) {
   try {
-    const response = await fetch("https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/friendRequestHandler.php", {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}friendRequestHandler.php`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -286,7 +288,7 @@ export async function declineFriendRequest(uid, requestID) {
 
 export async function fetchConnections(uid) {
   try {
-    const response = await fetch("https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/connectionsHandler.php", {
+    const response = await fetch(`${REACT_APP_API_BASE_URL}connectionsHandler.php`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

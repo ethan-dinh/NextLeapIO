@@ -1,70 +1,111 @@
-# Getting Started with Create React App
+# NextLeap
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+NextLeap is an innovative app designed to help recent college graduates connect with peers who are moving to the same cities. It tracks users' future plans and suggests potential connections based on mutual friends and shared destinations.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Project Summary](#project-summary)
+- [Features](#features)
+  - [Posting Features](#posting-features)
+  - [Networking Features](#networking-features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-### `npm start`
+## Project Summary
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Every year, millions of students graduate from college and embark on new journeys, moving to various cities to begin their careers. This transition, while exciting, often presents challenges such as making new friends or finding suitable roommates in unfamiliar environments. NextLeap aims to address these issues by enabling users to update their potential plans and build a network through which friends of friends moving to the same location will be suggested. This fosters connections and provides a supportive community, making the transition to a new city less daunting and more socially enriching.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+### Posting Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Detailed Posts**: Users can share detailed information about their post-graduation plans, including their intended destinations and a brief description of their goals and interests related to the move.
+- **Search Functionality**: Users can search for specific locations to see who else is planning to move there and create posts about their plans.
 
-### `npm run build`
+### Networking Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Friend Suggestions**: NextLeap suggests friends of friends who are planning to move to the same destination, leveraging the power of mutual connections to help users expand their social circles.
+- **User Profiles**: Users can view profiles, send friend requests, and initiate conversations, making it easier to find roommates, professional contacts, or friends in their new city.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Started
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prerequisites
 
-### `npm run eject`
+Ensure you have the following installed on your development machine:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Node.js
+- npm
+- React
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Installation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. **Clone the repository:**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```bash
+   git clone https://github.com/yourusername/NextLeap.git
+   cd NextLeap
+   ```
 
-## Learn More
+2. **Install dependencies:**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```bash
+   npm install
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. **Set up environment variables:**
 
-### Code Splitting
+   Create a `.env` file in the root directory and add your configuration details. An example `.env` file might look like this:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   ```
+   REACT_APP_AWS_ACCESS_KEY_ID=your_aws_access_key
+   REACT_APP_AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+   REACT_APP_AWS_REGION=your_aws_region
+   REACT_APP_BUCKET_NAME=your_s3_bucket_name
+   REACT_APP_API_BASE_URL=https://your.api.base.url/
+   ```
 
-### Analyzing the Bundle Size
+4. **Build and start the application:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+   ```bash
+   npm run build
+   npm start
+   ```
 
-### Making a Progressive Web App
+## Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. **Access the application:**
 
-### Advanced Configuration
+   Open your browser and go to [NextLeap](https://ix.cs.uoregon.edu/~edinh/NextLeap/).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+2. **Creating a Post:**
 
-### Deployment
+   - Navigate to the profile page.
+   - Use the location search to find your intended destination.
+   - Create a post with a description of your plans.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+3. **Connecting with Peers:**
 
-### `npm run build` fails to minify
+   - View suggested friends who are planning to move to the same destination.
+   - Send friend requests and start building your network.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Contributing
+
+Contributions are welcome! Please fork the repository and create a pull request with your changes.
+
+1. Fork the repository.
+2. Create a new branch: `git checkout -b my-feature-branch`.
+3. Make your changes and commit them: `git commit -m 'Add some feature'`.
+4. Push to the branch: `git push origin my-feature-branch`.
+5. Submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+This README file provides a comprehensive overview of the NextLeap project, including its features, installation steps, and usage instructions. Feel free to customize it further based on your project's specifics.

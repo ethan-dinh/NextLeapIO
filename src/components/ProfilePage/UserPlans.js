@@ -32,6 +32,19 @@ const PlanWithMap = ({ plan, activeTab, onDelete, userProfile, loggedInUid }) =>
             // Remove the ability to zoom in and out
             mapRef.current.scrollZoom.disable();
 
+            // Add zoom in and out buttons
+            const navigationControl = new mapboxgl.NavigationControl();
+            mapRef.current.addControl(navigationControl, 'top-right');
+
+            // Make the controls transparent for this map instance
+            mapRef.current.on('render', () => {
+                const controls = mapContainerRef.current.querySelectorAll('.mapboxgl-ctrl-top-right');
+                controls.forEach(control => {
+                    control.style.opacity = 0.3;
+                    control.classList.add('map-control-hover');
+                });
+            });
+
             // Ensure the map is fully loaded before calling resize
             mapRef.current.on('load', () => {
                 if (mapRef.current) {
@@ -46,7 +59,9 @@ const PlanWithMap = ({ plan, activeTab, onDelete, userProfile, loggedInUid }) =>
 
     useEffect(() => {
         setTimeout(() => {
-            mapRef.current.resize();
+            if (mapRef.current) {
+                mapRef.current.resize();
+            }
         }, 210);
     }, [activeTab]);
 
@@ -76,13 +91,19 @@ const PlanWithMap = ({ plan, activeTab, onDelete, userProfile, loggedInUid }) =>
                 <p className="post-about grey font-size-xs font-weight-600">
                     {plan.desc}
                 </p>
-                <div className="tags-selection">
-                    {tags.map((tag, index) => (
-                        <button key={tag} className={"tag"}>
-                            {tag}
-                        </button>
-                    ))}
-                </div>
+                
+                {tags.length === 1 && tags[0] === '' ? (
+                    <div style={{ height: "0px" }}></div>
+                ) : (
+                    <div className="tags-selection">
+                        {tags.map((tag, index) => (
+                            <button key={index} className="tag remove-pointer">
+                                {tag}
+                            </button>
+                        ))}
+                    </div>
+                )}
+        
             </div>
         </div>
     );
@@ -191,6 +212,18 @@ function CreatePost({ addNewPlan, loggedInUid, userProfile }) {
             map.scrollZoom.disable();
             map.dragPan.disable();
 
+            // Add functionality for the user to use buttons to zoom in and out
+            map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+            // Make the controls transparent for this map instance
+            map.on('render', () => {
+                const controls = mapContainerRef.current.querySelectorAll('.mapboxgl-ctrl-top-right');
+                controls.forEach(control => {
+                    control.style.opacity = 0.5;
+                    control.classList.add('map-control-hover');
+                });
+            });
+
             // Clean up on unmount
             return () => map.remove();
         }
@@ -253,7 +286,7 @@ function CreatePost({ addNewPlan, loggedInUid, userProfile }) {
                         <div className="bottom-row">
                             <div className="tags-selection">
                                 {tagsList.map((tag) => (
-                                    <button key={tag} className={selectedTags.includes(tag) ? 'tag tag-active' : 'tag'} onClick={() => toggleTagSelection(tag)}>
+                                    <button key={tag} className={selectedTags.includes(tag) ? 'tag tag-active' : 'tag select-tag'} onClick={() => toggleTagSelection(tag)}>
                                         {tag}
                                     </button>
                                 ))}

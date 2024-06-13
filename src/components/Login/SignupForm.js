@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const SignupForm = ({ toggleForm }) => {
+    const { setUser } = useContext(UserContext);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -10,6 +12,7 @@ const SignupForm = ({ toggleForm }) => {
         lastName: "",
     });
     const [phase, setPhase] = useState(1);
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate(); // useNavigate for navigation
 
     const handleChange = (e) => {
@@ -20,9 +23,43 @@ const SignupForm = ({ toggleForm }) => {
         }));
     };
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    };
+
+    const validatePhase1 = () => {
+        const newErrors = {};
+        if (!formData.email) {
+            newErrors.email = "Email is required";
+        } else if (!validateEmail(formData.email)) {
+            newErrors.email = "Email is not valid";
+        }
+        if (!formData.firstName) newErrors.firstName = "First name is required";
+        if (!formData.lastName) newErrors.lastName = "Last name is required";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleNext = () => {
+        if (validatePhase1()) {
+            setFormData((prevData) => ({
+                ...prevData,
+                firstName: capitalizeFirstLetter(prevData.firstName),
+                lastName: capitalizeFirstLetter(prevData.lastName),
+            }));
+            setPhase(2);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (phase === 2 && formData.password === formData.confirmPassword) {
+        if (formData.password === formData.confirmPassword) {
             fetch('https://ix.cs.uoregon.edu/~edinh/NextLeapAPI/signup.php', {
                 method: 'POST',
                 headers: {
@@ -39,14 +76,19 @@ const SignupForm = ({ toggleForm }) => {
             .then(data => {
                 if (data.success) {
                     console.log('Account created:', data.message);
-                    navigate(`/profile?uid=${data.uid}`); // Redirect to profile page with UID
+
+                    // convert data.uid to string
+                    data.uid = data.uid.toString();
+
+                    setUser({ uid: data.uid, profilePicPath: '' });
+                    setTimeout(() => navigate(`/profile?uid=${data.uid}`), 1000);
                 } else {
                     console.error('Error:', data.message);
-                    alert(data.message);  // Display error message to the user
+                    alert(data.message);  
                 }
             })
             .catch(error => console.error('Error:', error));
-        } else if (formData.password !== formData.confirmPassword) {
+        } else {
             alert('Passwords do not match');
         }
     };
@@ -59,19 +101,62 @@ const SignupForm = ({ toggleForm }) => {
             {phase === 1 ? (
                 <>
                     <p className="form-info">Email</p>
-                    <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                    {errors.email && <div className="error-message">{errors.email}</div>}
+                    
                     <p className="form-info">First Name</p>
-                    <input type="text" name="firstName" placeholder="John" value={formData.firstName} onChange={handleChange} required />
+                    <input
+                        type="text"
+                        name="firstName"
+                        placeholder="John"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                    />
+                    {errors.firstName && <div className="error-message">{errors.firstName}</div>}
+                    
                     <p className="form-info">Last Name</p>
-                    <input type="text" name="lastName" placeholder="Doe" value={formData.lastName} onChange={handleChange} required />
-                    <button type="button" onClick={() => setPhase(2)}>Next</button>
+                    <input
+                        type="text"
+                        name="lastName"
+                        placeholder="Doe"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                    />
+                    {errors.lastName && <div className="error-message">{errors.lastName}</div>}
+                    
+                    <button type="button" onClick={handleNext}>Next</button>
                 </>
             ) : (
                 <>
                     <p className="form-info">Password</p>
-                    <input type="password" name="password" placeholder="********" value={formData.password} onChange={handleChange} required />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="********"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                    
                     <p className="form-info">Confirm Password</p>
-                    <input type="password" name="confirmPassword" placeholder="********" value={formData.confirmPassword} onChange={handleChange} required />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="********"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                    />
+                    
                     <button type="submit">Sign Up</button>
                 </>
             )}

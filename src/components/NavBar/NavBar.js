@@ -126,7 +126,7 @@ function NavBar() {
       <div className="interaction-field">
         <div className="nav-icons">
           <button
-            onClick={() => handleIconClick("/notifications")}
+            onClick={() => handleIconClick("")}
             aria-label="Notifications"
             className="modern-button"
             id="notifications"

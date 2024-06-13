@@ -4,6 +4,13 @@
     padding-bottom: 10px;
 }
 
+.friend-requests p {
+    margin: 5px;
+    font-size: 13px;
+    color: #adb5bd;
+    font-weight: 600;
+}
+
 .friend-requests h4 {
     margin-bottom: 0.5rem;
 }
@@ -11,7 +18,6 @@
 .friend-requests ul {
     list-style: none;
     padding: 0;
-    margin-bottom: 0;
 }
   
 .friend-requests li {
@@ -21,6 +27,15 @@
     padding: 0.5rem 0;
     padding-left: 10px;
     margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.friend-requests li:last-child {
+    margin-bottom: 0;
+}
+.friend-request-item:hover {
+    background-color: #f8f9fa;
+    border-radius: 10px;
 }
   
 .friend-requests button {

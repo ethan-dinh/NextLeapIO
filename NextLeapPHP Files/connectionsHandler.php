@@ -27,11 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $requestType) {
         $get_connections_query = "
             SELECT 
                 u.uid AS uid, 
-                CONCAT(u.fname, ' ', u.lname) AS name
+                CONCAT(u.fname, ' ', u.lname) AS name,
+                city, state_code, profile_pic_path
             FROM 
                 Friends f
             JOIN 
                 UserLogin u ON (f.user1 = u.uid OR f.user2 = u.uid)
+            JOIN
+                UserInformation ON u.uid = UserInformation.uid
             WHERE 
                 (f.user1 = '$userUID' OR f.user2 = '$userUID') AND u.uid != '$userUID'
         ";

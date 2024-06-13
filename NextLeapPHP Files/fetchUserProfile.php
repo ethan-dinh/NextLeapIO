@@ -27,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $user = $user_result->fetch_assoc();
 
         // Fetch user bio and location
-        $info_sql = "SELECT bio, city, state_code FROM UserInformation WHERE UID = '$uid'";
+        $info_sql = "SELECT bio, city, state_code, profile_pic_path,profile_banner_path FROM UserInformation WHERE UID = '$uid'";
         $info_result = $conn->query($info_sql);
-        $info = ($info_result->num_rows > 0) ? $info_result->fetch_assoc() : ['bio' => '', 'city' => '', 'state_code' => ''];
+        $info = ($info_result->num_rows > 0) ? $info_result->fetch_assoc() : ['bio' => '', 'city' => '', 'state_code' => '', 'profile_pic_path' => '', 'profile_banner_path' => ''];
 
         // Fetch state name
         $state_sql = "SELECT state_name FROM StateInfo WHERE state_code = '{$info['state_code']}'";
@@ -53,6 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'email' => $user['Email'],
                 'bio' => $info['bio'],
                 'current_city' => $info['city'],
+                'profilePath' => $info['profile_pic_path'],
+                'bannerPath' => $info['profile_banner_path'],
                 'current_state' => $state['state_name'],
             ],
             'futurePlans' => $plans

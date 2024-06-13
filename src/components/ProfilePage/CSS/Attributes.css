@@ -1,5 +1,5 @@
 .grey {
-    color: #adb5bd;
+    color: #707070;
 }
 
 .font-size-xs {
@@ -69,7 +69,7 @@
 .modern-button {
     border: none;
     background-color: #f4f4f4;
-    color: white;
+    color: black;
     font-weight: 600;
     font-size: 11px;
     padding: 10px 10px;

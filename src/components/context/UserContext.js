@@ -9,6 +9,13 @@ export const UserProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  const updateUserProfilePic = (profilePicPath) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      profilePicPath,
+    }));
+  };
+
   useEffect(() => {
     // Save user to local storage whenever it changes
     if (user) {
@@ -19,7 +26,7 @@ export const UserProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, updateUserProfilePic}}>
       {children}
     </UserContext.Provider>
   );

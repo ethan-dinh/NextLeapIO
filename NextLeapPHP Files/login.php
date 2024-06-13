@@ -27,7 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         if ($row['Password'] === $password) {
-            echo json_encode(['success' => true, 'uid' => $row['UID']]);
+
+            // Fetch Profile Picture Path
+            $uid = $row['UID'];
+            $path_sql = "SELECT profile_pic_path FROM UserInformation WHERE UID = '$uid'";
+            $path_result = $conn->query($path_sql);
+
+            if ($path_result->num_rows > 0) {
+                $info = $path_result->fetch_assoc();
+                echo json_encode(['success' => true, 'uid' => $uid, 'profile_pic_path' => $info['profile_pic_path']]);
+            } else {
+                echo json_encode(['success' => true, 'uid' => $uid, 'profile_pic_path' => '']);
+            }
+
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid password']);
         }

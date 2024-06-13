@@ -7,6 +7,7 @@ import "./CSS/CreatePost.css";
 import ProfilePanel from "./ProfilePanel";
 import FriendRequests from "./FriendRequests";
 import Connections from "./Connections"; 
+import SuggestionPanel from "./Suggestions"; // Import the SuggestionPanel component
 import { fetchUserProfile } from "./api"; 
 
 import mapboxgl from "mapbox-gl";
@@ -50,15 +51,21 @@ function ProfilePage() {
 
       {!loading && (
         <div className="profile-page" style={{ opacity: opacity }}>
-          <div className="suggested-panel"></div>
+          {user?.uid === userProfile?.uid ? (
+            <SuggestionPanel />
+          ) : (
+            <div className="left"></div>
+          )}
           <ProfilePanel userProfile={userProfile} loggedInUid={user?.uid} setUserProfile={setUserProfile} />
           {user?.uid === userProfile?.uid ? (
             <div className="right">
               <FriendRequests onAccept={() => setReloadConnections(!reloadConnections)} />
-              <Connections reloadConnections={reloadConnections} />
+              <Connections userProfile={userProfile} reloadConnections={reloadConnections} />
             </div>
           ) : (
-            <div className="right"></div>
+            <div className="right">
+              <Connections userProfile={userProfile} reloadConnections={reloadConnections} />
+            </div>
           )}
         </div>
       )}

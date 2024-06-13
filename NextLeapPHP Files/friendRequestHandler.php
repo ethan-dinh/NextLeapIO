@@ -24,19 +24,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $requestType) {
         $senderUID = mysqli_real_escape_string($conn, $requestData['senderUID']);
         $receiverUID = mysqli_real_escape_string($conn, $requestData['receiverUID']);
 
-        // Check if a friend request already exists
-        $check_request_query = "SELECT * FROM FriendRequests WHERE senderUID = '$senderUID' AND receiverUID = '$receiverUID'";
-        $result = $conn->query($check_request_query);
+        // Check if the users are already friends
+        $check_friends_query = "
+            SELECT * FROM Friends 
+            WHERE (user1 = '$senderUID' AND user2 = '$receiverUID') 
+               OR (user1 = '$receiverUID' AND user2 = '$senderUID')";
+        $friends_result = $conn->query($check_friends_query);
 
-        if ($result->num_rows > 0) {
-            echo json_encode(['success' => false, 'message' => 'Friend request already sent.']);
+        if ($friends_result->num_rows > 0) {
+            echo json_encode(['success' => false, 'message' => 'You are already friends.']);
         } else {
-            // Insert a new friend request
-            $insert_request_query = "INSERT INTO FriendRequests (sender, receiver) VALUES ('$senderUID', '$receiverUID')";
-            if ($conn->query($insert_request_query) === TRUE) {
-                echo json_encode(['success' => true, 'message' => 'Friend request sent.']);
+            // Check if a friend request already exists
+            $check_request_query = "SELECT * FROM FriendRequests WHERE sender = '$senderUID' AND receiver = '$receiverUID'";
+            $result = $conn->query($check_request_query);
+
+            if ($result->num_rows > 0) {
+                echo json_encode(['success' => false, 'message' => 'Friend request already sent.']);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Failed to send friend request: ' . $conn->error]);
+                // Insert a new friend request
+                $insert_request_query = "INSERT INTO FriendRequests (sender, receiver) VALUES ('$senderUID', '$receiverUID')";
+                if ($conn->query($insert_request_query) === TRUE) {
+                    echo json_encode(['success' => true, 'message' => 'Friend request sent.']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Failed to send friend request: ' . $conn->error]);
+                }
             }
         }
     } elseif ($requestType === 'accept') {
@@ -58,14 +69,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $requestType) {
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to accept friend request: ' . $conn->error]);
         }
+    } elseif ($requestType === 'decline') {
+        $requestID = mysqli_real_escape_string($conn, $requestData['requestID']);
+        $userUID = mysqli_real_escape_string($conn, $requestData['userUID']);
+
+        // Delete the friend request
+        $delete_request_query = "DELETE FROM FriendRequests WHERE sender = '$requestID' AND receiver = '$userUID'";
+
+        if ($conn->query($delete_request_query) === TRUE) {
+            echo json_encode(['success' => true, 'message' => 'Friend request declined.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to decline friend request: ' . $conn->error]);
+        }
     } elseif ($requestType === 'getRequests') {
         $userUID = mysqli_real_escape_string($conn, $requestData['userUID']);
 
         // Retrieve friend requests for the user
         $get_requests_query = "
-            SELECT receiver, sender, CONCAT(UserLogin.fname, ' ', UserLogin.lname) AS senderName
+            SELECT receiver, sender, city, state_code, CONCAT(UserLogin.fname, ' ', UserLogin.lname) AS senderName, profile_pic_path
             FROM FriendRequests
             JOIN UserLogin ON FriendRequests.sender = UserLogin.uid
+            JOIN UserInformation ON UserLogin.uid = UserInformation.uid
             WHERE receiver = '$userUID'";
         $result = $conn->query($get_requests_query);
 

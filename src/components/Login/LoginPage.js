@@ -6,6 +6,7 @@ import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 
 import './css/Login.css';
+import './css/Signup.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaGUiLCJhIjoiY2xwMTBnYnZrMGQ2aDJrczVtb2FrYnJ3dSJ9.h0tUpCSX9MvaA-NirwN4rQ';
 

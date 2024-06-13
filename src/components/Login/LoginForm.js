@@ -33,11 +33,12 @@ const LoginForm = ({ toggleForm }) => {
                     setTimeout(() => {
                         setLoading(false);
                         setLoginSuccess(true);
+
                         setUser({ uid: data.uid, profilePicPath: data.profile_pic_path });
                         setTimeout(() => {
                             navigate(`/profile?uid=${data.uid}`);
-                        }, 500); // Checkmark for 1 second
-                    }, 2000); // Spinner for 3 seconds
+                        }, 500);
+                    }, 2000); 
                 } else {
                     setLoading(false);
                     if (data.errorType === "wrong_password") {

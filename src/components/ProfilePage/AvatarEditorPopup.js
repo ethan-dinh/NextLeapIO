@@ -4,15 +4,21 @@ import AvatarEditor from 'react-avatar-editor';
 import { uploadImage } from './api';
 import './CSS/AvatarEditorPopup.css';
 
-function AvatarEditorPopup({ file, userProfileUid, onClose, onSave }) {
+function AvatarEditorPopup({ file, fileType, userProfileUid, onClose, onSave }) {
   const [editor, setEditor] = useState(null);
   const [scale, setScale] = useState(1);
   const [uploading, setUploading] = useState(false);
+  let width = 200;
+  const height = 200;
+
+  if (fileType !== 'avatar') {
+    width = 600;
+  }
 
   const handleSave = async () => {
     setUploading(true);
     try {
-      const response = await uploadImage(userProfileUid, editor);
+      const response = await uploadImage(userProfileUid, editor, fileType);
       onSave(response);
       onClose();
     } catch (error) {
@@ -30,8 +36,8 @@ function AvatarEditorPopup({ file, userProfileUid, onClose, onSave }) {
         <AvatarEditor
           ref={setEditor}
           image={file}
-          width={200}
-          height={200}
+          width={width}
+          height={height}
           border={50}
           color={[0, 0, 0, 0.6]}
           scale={scale}
@@ -48,7 +54,7 @@ function AvatarEditorPopup({ file, userProfileUid, onClose, onSave }) {
             onChange={(e) => setScale(parseFloat(e.target.value))}
             className="scale-range"
           />
-          <button onClick={handleSave} disabled={uploading}>
+          <button onClick={handleSave} disabled={uploading} className="modern-button">
             {uploading ? "Uploading..." : "Save"}
           </button>
         </div>

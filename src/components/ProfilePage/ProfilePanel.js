@@ -31,6 +31,13 @@ function ProfilePanel({ userProfile, setUserProfile, loggedInUid }) {
     }));
   };
 
+  const updateBannerPicture = (newBannerPicPath) => {
+    setUserProfile((prevProfile) => ({
+      ...prevProfile,
+      bannerPicPath: newBannerPicPath,
+    }));
+  };
+
   return (
     <div className="profile-panel">
       <GeneralInfoCard
@@ -40,6 +47,7 @@ function ProfilePanel({ userProfile, setUserProfile, loggedInUid }) {
         handleTabClick={handleTabClick}
         activeTab={activeTab}
         updateProfilePicture={updateProfilePicture}
+        updateBannerPicture={updateBannerPicture}
       />
       <div className="row-flex">
         <AboutCard

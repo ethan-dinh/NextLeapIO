@@ -16,7 +16,27 @@ const s3 = new AWS.S3({
   region: REACT_APP_AWS_REGION
 });
 
-export const uploadImage = async (userId, editor) => {
+export async function fetchSuggestedFriends(uid) {
+  const url = `${REACT_APP_API_BASE_URL}/getSuggestedFriends.php`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ uid }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch suggested friends');
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+
+export const uploadImage = async (userId, editor, fileType) => {
   if (!editor) return;
 
   // Get the canvas image blob
@@ -24,7 +44,7 @@ export const uploadImage = async (userId, editor) => {
   const blob = await fetch(canvas).then(res => res.blob());
 
   // Define the S3 parameters for the new image
-  const key = `${userId}_${Date.now()}.png`;
+  const key = `${userId}_${fileType}_${Date.now()}.png`;
   const params = {
     Bucket: REACT_APP_BUCKET_NAME,
     Key: key,
@@ -34,14 +54,14 @@ export const uploadImage = async (userId, editor) => {
 
   try {
     // Delete old images
-    await deleteOldImages(userId);
+    await deleteOldImages(userId, fileType);
 
     // Upload the new image to S3
     const data = await s3.upload(params).promise();
     const imagePath = data.Location;
 
     // Save the new image path to the database
-    await saveImagePath(userId, imagePath);
+    await saveImagePath(userId, imagePath, fileType);
     return imagePath;
 
   } catch (error) {
@@ -50,11 +70,11 @@ export const uploadImage = async (userId, editor) => {
   }
 };
 
-const deleteOldImages = async (userId) => {
+const deleteOldImages = async (userId, fileType) => {
   try {
     const listParams = {
       Bucket: REACT_APP_BUCKET_NAME,
-      Prefix: `${userId}_`,
+      Prefix: `${userId}_${fileType}_`,
     };
 
     // List all objects in the bucket for the user
@@ -79,7 +99,7 @@ const deleteOldImages = async (userId) => {
   }
 };
 
-async function saveImagePath(uid, imagePath) {
+async function saveImagePath(uid, imagePath, fileType) {
   const url = `${REACT_APP_API_BASE_URL}saveImagePath.php`;
 
   const response = await fetch(url, {
@@ -91,6 +111,7 @@ async function saveImagePath(uid, imagePath) {
       requestType: "saveImagePath",
       uid,
       imagePath,
+      fileType,
     }),
   });
 
@@ -125,6 +146,7 @@ export async function fetchUserProfile(uid) {
       location: `${profileInfo.current_city}, ${profileInfo.current_state}`,
       plans: futurePlans,
       profilePicPath: profileInfo.profilePath,
+      bannerPicPath: profileInfo.bannerPath,
     };
   } catch (error) {
     console.error("Error:", error);

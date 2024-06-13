@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import "./CSS/FriendRequests.css";
-import { fetchFriendRequests, acceptFriendRequest, declineFriendRequest } from "./api"; 
+import { fetchFriendRequests, acceptFriendRequest, declineFriendRequest } from "./api";
 
 import noIcon from "./icons/no.png";
 import yesIcon from "./icons/yes.png";
@@ -11,6 +12,7 @@ const FriendRequests = ({ onAccept }) => {
   const { user } = useContext(UserContext);
   const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -44,8 +46,12 @@ const FriendRequests = ({ onAccept }) => {
       await declineFriendRequest(user.uid, requestID);
       setFriendRequests(friendRequests.filter(request => request.sender !== requestID));
     } catch (error) {
-      console.error("Error accepting friend request:", error);
+      console.error("Error declining friend request:", error);
     }
+  };
+
+  const handleUserClick = (uid) => {
+    navigate(`/profile?uid=${uid}`);
   };
 
   return (
@@ -57,9 +63,9 @@ const FriendRequests = ({ onAccept }) => {
         friendRequests.length > 0 ? (
           <ul>
             {friendRequests.map((request) => (
-              <li key={request.sender}>
-                <div className="profile-name">
-                  <img src={Avatar} alt="Profile" id="request-img"/>
+              <li key={request.sender} className="friend-request-item">
+                <div className="profile-name" onClick={() => handleUserClick(request.sender)}>
+                  <img src={request.profile_pic_path ? request.profile_pic_path : Avatar} alt="Profile" id="request-img"/>
                   <div className="request-info">
                     <h4> {request.senderName} </h4>
                     <p> {request.city}, {request.state_code} </p>
@@ -89,7 +95,7 @@ const FriendRequests = ({ onAccept }) => {
             ))}
           </ul>
         ) : (
-          <p>No friend requests.</p>
+          <p>No friend requests</p>
         )
       )}
     </div>

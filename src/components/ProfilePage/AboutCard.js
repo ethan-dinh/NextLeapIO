@@ -8,7 +8,7 @@ function AboutCard({ userProfile, setUserProfile, editMode, setEditMode, activeT
 
   useEffect(() => {
     if (!editMode) {
-      setBio(userProfile.about);
+      setBio(userProfile.about); 
       setCity(userProfile.location.split(", ")[0]);
       setState(userProfile.location.split(", ")[1]);
     }
